@@ -1,0 +1,175 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Security Decision Challenge</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
+<link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+
+<!-- Matrix Canvas Background -->
+<canvas id="matrix-canvas"></canvas>
+
+<!-- CRT Flicker Overlay -->
+<div id="crt-overlay"></div>
+
+<!-- Security Narrator Toast -->
+<div id="narrator-toast"></div>
+
+<!-- ==================== SCREEN 1: TITLE ==================== -->
+<div id="title-screen" class="screen active">
+  <div class="title-container"><div style="margin-bottom:12px;text-align:center;"><img src="assets/Chegg_Logo_Orange_RGB-01.png" alt="Chegg Logo" style="width:70px;min-width:70px;height:auto"></div>
+    <div class="game-title" id="game-title"></div>
+    <div class="tagline" id="tagline">EVERY DECISION HAS CONSEQUENCES</div>
+    
+    <div class="resume-banner" id="resume-banner">
+      <span>IN PROGRESS: Round <span id="resume-round"></span></span>
+      <button class="btn btn-small" id="resume-btn">RESUME</button>
+      <button class="btn btn-small" id="newgame-btn" style="border-color:var(--text-dim);color:var(--text-dim);">NEW GAME</button>
+    </div>
+    
+    <div class="terminal-window boot-terminal">
+      <div class="terminal-topbar">
+        <span class="terminal-dot red"></span>
+        <span class="terminal-dot amber"></span>
+        <span class="terminal-dot green"></span>
+        <span class="terminal-title">system.boot</span>
+      </div>
+      <div class="terminal-body" id="boot-sequence">
+        <span class="boot-line"><span class="prompt">&gt;</span> Initializing security module...</span>
+        <span class="boot-line"><span class="prompt">&gt;</span> Loading awareness protocols...</span>
+        <span class="boot-line"><span class="prompt">&gt;</span> Employee verification: PENDING</span>
+        <span class="boot-line"><span class="prompt">&gt;</span> Awaiting user input...</span>
+      </div>
+    </div>
+    
+    <button class="btn" id="enter-btn" style="display:none;">ENTER THE CHALLENGE</button>
+    <div class="title-footer">15 Decision Rounds | No Timer | Learn by Doing</div>
+  </div>
+</div>
+
+<!-- ==================== SCREEN 2: GAMEPLAY ==================== -->
+<div id="gameplay-screen" class="screen">
+  <!-- HUD Bar -->
+  <div class="hud-bar">
+    <div class="hud-item">
+      <span class="hud-label">SEC.SCORE</span>
+      <span class="hud-value" id="hud-score">0000</span>
+    </div>
+    <div class="hud-item">
+      <span class="hud-label">RISK.LVL</span>
+      <span class="hud-value" id="hud-risk">LOW<span class="hud-dot low" id="hud-risk-dot"></span></span>
+    </div>
+    <div class="hud-item">
+      <span class="hud-label">INC.PREV</span>
+      <span class="hud-value" id="hud-incidents">0</span>
+    </div>
+    <div class="hud-item">
+      <span class="hud-label">DEC.REM</span>
+      <span class="hud-value" id="hud-remaining">15</span>
+    </div>
+  </div>
+  
+  <!-- Round Progress -->
+  <div class="round-section">
+    <div class="round-indicator" id="round-indicator">ROUND 01 / 15</div>
+    <div class="progress-bar-bg">
+      <div class="progress-bar-fill" id="progress-fill"></div>
+    </div>
+  </div>
+  
+  <!-- Game Content -->
+  <div class="game-content">
+    <!-- Scenario Card -->
+    <div class="terminal-window scenario-card">
+      <div class="terminal-topbar">
+        <span class="terminal-dot red"></span>
+        <span class="terminal-dot amber"></span>
+        <span class="terminal-dot green"></span>
+        <span class="terminal-title" id="scenario-title">scenario.dat</span>
+      </div>
+      <div class="terminal-body" id="scenario-body">
+        <div class="scenario-situation" id="scenario-situation"></div>
+        <div class="scenario-detail" id="scenario-detail"></div>
+      </div>
+    </div>
+    
+    <!-- Choices -->
+    <div class="choices-container" id="choices-container"></div>
+    
+    <!-- Hint Accordion -->
+    <div class="hint-accordion" id="hint-accordion">
+      <div class="hint-header" id="hint-header">
+        <span>NEED A HINT? (press H)</span>
+        <span class="hint-toggle">+</span>
+      </div>
+      <div class="hint-body" id="hint-body"></div>
+    </div>
+    
+    <!-- Feedback Terminal -->
+    <div class="terminal-window feedback-terminal" id="feedback-terminal">
+      <div class="terminal-topbar">
+        <span class="terminal-dot red"></span>
+        <span class="terminal-dot amber"></span>
+        <span class="terminal-dot green"></span>
+        <span class="terminal-title">analysis.out</span>
+      </div>
+      <div class="terminal-body" id="feedback-body">
+        <span class="feedback-title" id="feedback-title"></span>
+        <div id="feedback-text"></div>
+        <button class="btn btn-continue" id="continue-btn"></button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== SCREEN 3: RESULTS ==================== -->
+<div id="results-screen" class="screen">
+  <div class="results-container">
+    <div class="results-title" id="results-title"></div>
+    
+    <div class="score-badge" id="score-badge">
+      <div class="badge-title" id="badge-title"></div>
+      <div class="badge-score" id="badge-score"></div>
+    </div>
+    
+    <div class="score-cards-grid" id="score-cards-grid">
+      <div class="score-card" style="animation-delay:0.1s;">
+        <div class="score-card-label">Overall Security Score</div>
+        <div class="score-card-value" id="card-score"></div>
+        <div class="score-card-sub">out of 1500</div>
+      </div>
+      <div class="score-card" style="animation-delay:0.25s;">
+        <div class="score-card-label">Risk Awareness Rating</div>
+        <div class="score-card-value" id="card-risk"></div>
+      </div>
+      <div class="score-card" style="animation-delay:0.4s;">
+        <div class="score-card-label">Audit Readiness Rating</div>
+        <div class="score-card-value" id="card-audit"></div>
+      </div>
+      <div class="score-card" style="animation-delay:0.55s;">
+        <div class="score-card-label">Incident Prevention Rating</div>
+        <div class="score-card-value" id="card-incident"></div>
+      </div>
+    </div>
+    
+    <div class="learning-summary" id="learning-summary">
+      <h3>Learning Summary</h3>
+      <ul id="learning-list"></ul>
+    </div>
+    
+    <div class="closing-message" id="closing-message"></div>
+    
+    <button class="btn" id="restart-btn">RESTART CHALLENGE</button>
+  </div>
+</div>
+
+<script src="assets/js/game.js"></script>
+</body>
+</html>
